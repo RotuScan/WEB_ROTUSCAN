@@ -1,4 +1,4 @@
-// index.js (versão ajustada)
+// index.js (versão final — com seed de ingredientes e alérgenos)
 import express from "express";
 const app = express();
 
@@ -13,8 +13,7 @@ import Alergenicos from "./models/alergenicos.js";
 import produtosIngredientes from "./models/produtosIngredientes.js";
 import ingredientesAlergenicos from "./models/ingredientesAlergenicos.js";
 
-// ----- Associações (executa apenas, sem export necessário) -----
-// IMPORTANTE: garanta que ./config/associations.js importe os mesmos paths em minúsculas
+// ----- Associações -----
 import "./config/associations.js";
 
 // ----- Middlewares -----
@@ -51,27 +50,40 @@ app.get("/", (req, res) => {
 });
 
 // ----------------------------
-// Sincroniza DB e (opcional) seed
+// Sincroniza DB + seed inicial
 // ----------------------------
 (async () => {
   try {
-    // Uma única sincronização centralizada
     await connection.sync({ force: false });
     console.log("✅ Banco sincronizado com sucesso.");
 
-    // Seed leve — só se ainda não existir. Remova se não quiser popular automaticamente.
+    // --- Seed de alérgenos ---
     const alergenosPadrao = [
-      "Ovos","Leite","Aditivos alimentares","Sacarose","Frutose",
-      "Lactose","Glúten","Alimentos vegetais","Farinhas e grãos",
-      "Refrigerantes","Café e chocolate","Trigo","Soja",
-      "Amendoim e oleaginosas","Crustáceos","Peixes","Sem alergênicos"
+      "Ovos", "Leite", "Aditivos alimentares", "Sacarose", "Frutose",
+      "Lactose", "Glúten", "Alimentos vegetais", "Farinhas e grãos",
+      "Refrigerantes", "Café e chocolate", "Trigo", "Soja",
+      "Amendoim e oleaginosas", "Crustáceos", "Peixes", "Sem alergênicos"
     ];
-
     for (const nome of alergenosPadrao) {
       await Alergenicos.findOrCreate({ where: { nome } });
     }
+    console.log("✅ Seed de alérgenos concluído.");
 
-    console.log("✅ Seed de alérgenos (se necessário) executada.");
+    // --- Seed de ingredientes ---
+    const ingredientesPadrao = [
+      { nome: "Leite", descricao: "Derivado de leite" },
+      { nome: "Trigo", descricao: "Contém glúten" },
+      { nome: "Ovo", descricao: "Fonte de proteína animal" },
+      { nome: "Soja", descricao: "Leguminosa comum" },
+      { nome: "Amendoim", descricao: "Oleaginosa comum em alergias" },
+      { nome: "Peixe", descricao: "Ingrediente de origem animal" },
+      { nome: "Arroz", descricao: "Ingrediente neutro, sem alergênicos" }
+    ];
+    for (const ing of ingredientesPadrao) {
+      await Ingredientes.findOrCreate({ where: { nome: ing.nome }, defaults: ing });
+    }
+    console.log("✅ Seed de ingredientes concluído.");
+
   } catch (err) {
     console.error("❌ Erro ao sincronizar/seed:", err);
   }
@@ -85,4 +97,4 @@ app.listen(port, function (error) {
   } else {
     console.log(`Servidor iniciado com sucesso em http://localhost:${port} !`);
   }
-});
+})
