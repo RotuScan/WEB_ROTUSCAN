@@ -1,4 +1,4 @@
-// index.js (versão final — com seed de ingredientes e alérgenos)
+// index.js (versão final — com seed completo de ingredientes e alérgenos)
 import express from "express";
 const app = express();
 
@@ -69,21 +69,55 @@ app.get("/", (req, res) => {
     }
     console.log("✅ Seed de alérgenos concluído.");
 
-    // --- Seed de ingredientes ---
-    const ingredientesPadrao = [
-      { nome: "Leite", descricao: "Derivado de leite" },
-      { nome: "Trigo", descricao: "Contém glúten" },
-      { nome: "Ovo", descricao: "Fonte de proteína animal" },
-      { nome: "Soja", descricao: "Leguminosa comum" },
-      { nome: "Amendoim", descricao: "Oleaginosa comum em alergias" },
-      { nome: "Peixe", descricao: "Ingrediente de origem animal" },
-      { nome: "Arroz", descricao: "Ingrediente neutro, sem alergênicos" }
+    // --- Seed de ingredientes (ampliado) ---
+    const seed = [
+      { nome: "Clara de ovo", descricao: "Derivado de ovo", alergeno: "Ovos" },
+      { nome: "Gema de ovo", descricao: "Derivado de ovo", alergeno: "Ovos" },
+      { nome: "Leite integral", descricao: "Produto lácteo", alergeno: "Leite" },
+      { nome: "Queijo", descricao: "Produto fermentado do leite", alergeno: "Leite" },
+      { nome: "Lactose", descricao: "Açúcar do leite", alergeno: "Lactose" },
+      { nome: "Soro de leite", descricao: "Subproduto lácteo", alergeno: "Lactose" },
+      { nome: "Glutamato monossódico", descricao: "Realçador de sabor", alergeno: "Aditivos alimentares" },
+      { nome: "Corante artificial", descricao: "Aditivo alimentar", alergeno: "Aditivos alimentares" },
+      { nome: "Açúcar refinado", descricao: "Sacarose comum", alergeno: "Sacarose" },
+      { nome: "Xarope de milho", descricao: "Fonte de frutose", alergeno: "Frutose" },
+      { nome: "Farinha de trigo", descricao: "Contém glúten", alergeno: "Farinhas e grãos" },
+      { nome: "Cevada", descricao: "Grão que contém glúten", alergeno: "Glúten" },
+      { nome: "Trigo duro", descricao: "Variedade de trigo", alergeno: "Trigo" },
+      { nome: "Aveia", descricao: "Grãos com possível contaminação por glúten", alergeno: "Farinhas e grãos" },
+      { nome: "Tomate", descricao: "Ingrediente vegetal", alergeno: "Alimentos vegetais" },
+      { nome: "Soja verde", descricao: "Produto vegetal", alergeno: "Alimentos vegetais" },
+      { nome: "Ácido fosfórico", descricao: "Usado em refrigerantes", alergeno: "Refrigerantes" },
+      { nome: "Aromatizante de cola", descricao: "Aditivo de refrigerante", alergeno: "Refrigerantes" },
+      { nome: "Cacau", descricao: "Ingrediente de chocolate", alergeno: "Café e chocolate" },
+      { nome: "Café torrado", descricao: "Ingrediente de bebida", alergeno: "Café e chocolate" },
+      { nome: "Soja em pó", descricao: "Derivado da soja", alergeno: "Soja" },
+      { nome: "Óleo de soja", descricao: "Óleo vegetal", alergeno: "Soja" },
+      { nome: "Amendoim torrado", descricao: "Oleaginosa comum", alergeno: "Amendoim e oleaginosas" },
+      { nome: "Avelã", descricao: "Oleaginosa (castanha)", alergeno: "Amendoim e oleaginosas" },
+      { nome: "Camarão", descricao: "Crustáceo comum", alergeno: "Crustáceos" },
+      { nome: "Lagosta", descricao: "Crustáceo", alergeno: "Crustáceos" },
+      { nome: "Salmão", descricao: "Peixe de água salgada", alergeno: "Peixes" },
+      { nome: "Atum", descricao: "Peixe de água salgada", alergeno: "Peixes" },
+      { nome: "Arroz integral", descricao: "Ingrediente neutro", alergeno: "Sem alergênicos" },
     ];
-    for (const ing of ingredientesPadrao) {
-      await Ingredientes.findOrCreate({ where: { nome: ing.nome }, defaults: ing });
-    }
-    console.log("✅ Seed de ingredientes concluído.");
 
+    for (const item of seed) {
+      const [ing] = await Ingredientes.findOrCreate({
+        where: { nome: item.nome },
+        defaults: { descricao: item.descricao },
+      });
+
+      const alerg = await Alergenicos.findOne({ where: { nome: item.alergeno } });
+      if (alerg) {
+        await ingredientesAlergenicos.findOrCreate({
+          where: { ingredienteId: ing.id, alergenoId: alerg.id },
+          defaults: { ingredienteId: ing.id, alergenoId: alerg.id },
+        });
+      }
+    }
+
+    console.log("✅ Seed de ingredientes e relações concluído.");
   } catch (err) {
     console.error("❌ Erro ao sincronizar/seed:", err);
   }
@@ -97,4 +131,4 @@ app.listen(port, function (error) {
   } else {
     console.log(`Servidor iniciado com sucesso em http://localhost:${port} !`);
   }
-})
+});
