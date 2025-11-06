@@ -26,22 +26,6 @@ window.addEventListener('scroll', function () {
     scrollProgress.style.width = scrollPercent + '%';
 });
 
-// Back to Top Button
-const backToTop = document.getElementById('backToTop');
-window.addEventListener('scroll', function () {
-    if (window.pageYOffset > 300) {
-        backToTop.classList.add('show');
-    } else {
-        backToTop.classList.remove('show');
-    }
-});
-
-backToTop.addEventListener('click', function () {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-});
 
 // Navbar scroll effect
 const navbar = document.getElementById('navbar');
@@ -89,149 +73,123 @@ window.addEventListener('scroll', function () {
     });
 });
 
-// Interactive Quiz
-const quizQuestions = [
-    {
-        question: "Você sente desconforto abdominal após consumir pães ou massas?",
-        options: ["Sempre ou quase sempre", "Às vezes", "Raramente ou nunca"],
-        values: [2, 1, 0]
-    },
-    {
-        question: "Você experimenta fadiga ou cansaço após refeições com glúten?",
-        options: ["Frequentemente", "Ocasionalmente", "Nunca"],
-        values: [2, 1, 0]
-    },
-    {
-        question: "Você tem problemas de pele (eczema, dermatite)?",
-        options: ["Sim, frequentemente", "Às vezes", "Não"],
-        values: [2, 1, 0]
-    },
-    {
-        question: "Você sente dores de cabeça após consumir alimentos com glúten?",
-        options: ["Sim, regularmente", "Ocasionalmente", "Não"],
-        values: [2, 1, 0]
-    },
-    {
-        question: "Você tem histórico familiar de doença celíaca ou intolerância ao glúten?",
-        options: ["Sim", "Não tenho certeza", "Não"],
-        values: [2, 1, 0]
-    }
-];
 
-let currentQuestion = 0;
-let totalScore = 0;
 
-function displayQuestion() {
-    const questionText = document.getElementById('questionText');
-    const quizOptions = document.getElementById('quizOptions');
-    const nextButton = document.getElementById('nextQuestion');
-    const resultButton = document.getElementById('showResult');
 
-    if (currentQuestion < quizQuestions.length) {
-        const question = quizQuestions[currentQuestion];
-        questionText.textContent = question.question;
+// === Banco de quizz   es ===
+const quizzes = {
+  gluten: [
+    { q: "Você sente desconforto abdominal após consumir pães ou massas?", o: ["Sempre", "Às vezes", "Nunca"], v: [2, 1, 0] },
+    { q: "Você experimenta fadiga após refeições com glúten?", o: ["Frequentemente", "Ocasionalmente", "Nunca"], v: [2, 1, 0] },
+    { q: "Você tem problemas de pele (eczema, dermatite)?", o: ["Sim", "Às vezes", "Não"], v: [2, 1, 0] },
+    { q: "Você sente dores de cabeça após comer glúten?", o: ["Sim", "Ocasionalmente", "Não"], v: [2, 1, 0] },
+    { q: "Há histórico familiar de intolerância ao glúten?", o: ["Sim", "Não sei", "Não"], v: [2, 1, 0] }
+  ],
+  lactose: [
+    { q: "Você sente gases, cólicas ou inchaço após consumir leite ou derivados?", o: ["Sempre", "Às vezes", "Nunca"], v: [2, 1, 0] },
+    { q: "Você evita laticínios por desconforto?", o: ["Sim", "Às vezes", "Não"], v: [2, 1, 0] },
+    { q: "Você tem diarreia após produtos lácteos?", o: ["Sim", "Raramente", "Nunca"], v: [2, 1, 0] },
+    { q: "Você tolera iogurtes ou queijos sem sintomas?", o: ["Não", "Parcialmente", "Sim"], v: [2, 1, 0] },
+    { q: "Há histórico familiar de intolerância à lactose?", o: ["Sim", "Não sei", "Não"], v: [2, 1, 0] }
+  ],
+  amendoim: [
+    { q: "Você sente coceira, formigamento ou inchaço após comer amendoim?", o: ["Sim, sempre", "Às vezes", "Nunca"], v: [2, 1, 0] },
+    { q: "Você já teve falta de ar ou chiado após consumir amendoim?", o: ["Sim", "Pouco", "Não"], v: [2, 1, 0] },
+    { q: "Você teve urticária (manchas vermelhas) após comer amendoim?", o: ["Sim", "Às vezes", "Não"], v: [2, 1, 0] },
+    { q: "Você evita produtos que contêm traços de amendoim?", o: ["Sim, sempre", "Às vezes", "Nunca"], v: [2, 1, 0] },
+    { q: "Há histórico familiar de alergia a amendoim?", o: ["Sim", "Não sei", "Não"], v: [2, 1, 0] }
+  ]
+};
 
-        quizOptions.innerHTML = '';
-        question.options.forEach((option, index) => {
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'quiz-option';
-            optionDiv.textContent = option;
-            optionDiv.dataset.value = question.values[index];
-            quizOptions.appendChild(optionDiv);
-        });
+// === Variáveis globais ===
+let selectedQuiz = 'gluten';
+let qIndex = 0, score = 0;
 
-        // Add click handlers to options
-        document.querySelectorAll('.quiz-option').forEach(option => {
-            option.addEventListener('click', function () {
-                document.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
+// === Elementos ===
+const qText = document.getElementById('questionText'),
+      qOptions = document.getElementById('quizOptions'),
+      btnNext = document.getElementById('nextQuestion'),
+      btnResult = document.getElementById('showResult'),
+      quizResult = document.getElementById('quizResult'),
+      quizContent = document.getElementById('quizContent'),
+      quizSelector = document.getElementById('quizSelector');
 
-                if (currentQuestion === quizQuestions.length - 1) {
-                    resultButton.style.display = 'inline-block';
-                    nextButton.style.display = 'none';
-                } else {
-                    nextButton.style.display = 'inline-block';
-                    resultButton.style.display = 'none';
-                }
-            });
-        });
-    }
+// === Funções do quiz ===
+function loadQuestion() {
+  const quiz = quizzes[selectedQuiz];
+  if (qIndex >= quiz.length) return;
+
+  const { q, o, v } = quiz[qIndex];
+  qText.textContent = q;
+  qOptions.innerHTML = o.map((opt, i) =>
+    `<div class="quiz-option" data-value="${v[i]}">${opt}</div>`).join('');
+
+  document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.onclick = () => {
+      document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      btnNext.style.display = qIndex < quiz.length - 1 ? 'inline-block' : 'none';
+      btnResult.style.display = qIndex === quiz.length - 1 ? 'inline-block' : 'none';
+    };
+  });
 }
 
 function nextQuestion() {
-    const selectedOption = document.querySelector('.quiz-option.selected');
-    if (selectedOption) {
-        totalScore += parseInt(selectedOption.dataset.value);
-        currentQuestion++;
-        displayQuestion();
-    }
+  const selected = document.querySelector('.quiz-option.selected');
+  if (!selected) return;
+  score += +selected.dataset.value;
+  qIndex++;
+  loadQuestion();
 }
 
-function showQuizResult() {
-    const selectedOption = document.querySelector('.quiz-option.selected');
-    if (selectedOption) {
-        totalScore += parseInt(selectedOption.dataset.value);
-    }
+function showResult() {
+  const selected = document.querySelector('.quiz-option.selected');
+  if (selected) score += +selected.dataset.value;
 
-    const quizContent = document.getElementById('quizContent');
-    const quizResult = document.getElementById('quizResult');
+  quizContent.style.display = 'none';
+  let cls = '', msg = '';
 
-    let resultText = '';
-    let resultClass = '';
+  if (score >= 7) {
+    cls = 'bg-danger'; 
+    msg = "<h3><i class='fas fa-exclamation-triangle me-2'></i>Alta Probabilidade</h3><p>Procure um profissional de saúde para exames e diagnóstico.</p>";
+  } else if (score >= 4) {
+    cls = 'bg-warning'; 
+    msg = "<h3><i class='fas fa-question-circle me-2'></i>Probabilidade Moderada</h3><p>Observe seus sintomas e procure orientação médica se necessário.</p>";
+  } else {
+    cls = 'bg-success'; 
+    msg = "<h3><i class='fas fa-check-circle me-2'></i>Baixa Probabilidade</h3><p>É improvável que você tenha essa intolerância, mas continue atento ao seu bem-estar.</p>";
+  }
 
-    if (totalScore >= 7) {
-        resultText = `
-                    <h3><i class="fas fa-exclamation-triangle me-2"></i>Alta Probabilidade</h3>
-                    <p>Seus sintomas sugerem uma possível intolerância ao glúten. Recomendamos fortemente que consulte um médico gastroenterologista para avaliação adequada e exames específicos.</p>
-                    <div class="mt-3">
-                        <strong>Próximos passos:</strong>
-                        <ul class="text-start mt-2">
-                            <li>Agende consulta médica</li>
-                            <li>Mantenha um diário alimentar</li>
-                            <li>Não elimine o glúten antes dos exames</li>
-                        </ul>
-                    </div>
-                `;
-        resultClass = 'bg-danger';
-    } else if (totalScore >= 4) {
-        resultText = `
-                    <h3><i class="fas fa-question-circle me-2"></i>Probabilidade Moderada</h3>
-                    <p>Alguns sintomas podem estar relacionados ao glúten. Vale a pena observar mais atentamente sua reação aos alimentos e considerar uma consulta médica.</p>
-                    <div class="mt-3">
-                        <strong>Sugestões:</strong>
-                        <ul class="text-start mt-2">
-                            <li>Observe padrões alimentares</li>
-                            <li>Considere consulta médica</li>
-                            <li>Mantenha registro de sintomas</li>
-                        </ul>
-                    </div>
-                `;
-        resultClass = 'bg-warning';
-    } else {
-        resultText = `
-                    <h3><i class="fas fa-check-circle me-2"></i>Baixa Probabilidade</h3>
-                    <p>Com base nas suas respostas, é menos provável que você tenha intolerância ao glúten. No entanto, se continuar com sintomas, consulte um profissional de saúde.</p>
-                    <div class="mt-3">
-                        <strong>Mantenha-se saudável:</strong>
-                        <ul class="text-start mt-2">
-                            <li>Continue uma dieta equilibrada</li>
-                            <li>Observe mudanças nos sintomas</li>
-                            <li>Consulte médico se necessário</li>
-                        </ul>
-                    </div>
-                `;
-        resultClass = 'bg-success';
-    }
-
-    quizContent.style.display = 'none';
-    quizResult.innerHTML = resultText;
-    quizResult.className = `quiz-result show ${resultClass}`;
+  quizResult.className = `quiz-result show ${cls}`;
+  quizResult.innerHTML = msg + `
+    <div class="text-center mt-3">
+      <button class="btn btn-secondary" onclick="resetQuiz()">Refazer Quiz</button>
+    </div>`;
 }
 
-// Initialize quiz
-document.getElementById('nextQuestion').addEventListener('click', nextQuestion);
-document.getElementById('showResult').addEventListener('click', showQuizResult);
-displayQuestion();
+function resetQuiz() {
+  score = 0; qIndex = 0;
+  quizContent.style.display = 'block';
+  quizResult.innerHTML = ''; quizResult.className = 'quiz-result';
+  btnNext.style.display = btnResult.style.display = 'none';
+  loadQuestion();
+}
+
+// === Eventos ===
+btnNext.onclick = nextQuestion;
+btnResult.onclick = showResult;
+quizSelector.onchange = () => {
+  selectedQuiz = quizSelector.value;
+  resetQuiz();
+};
+
+// === Inicialização ===
+loadQuestion();
+
+
+
+
+
 
 // Add parallax effect to hero section
 window.addEventListener('scroll', function () {

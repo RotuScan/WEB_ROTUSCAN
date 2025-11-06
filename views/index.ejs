@@ -121,7 +121,7 @@
               <div class="card-icon">
                 <img src="imgs//restricoesFrequentes/imgCeliaca.png" alt="" />
               </div>
-              <h3 class="titleCard">Doença Celíaca</h3>
+              <h3 class="titleCard">Intolerância ao Glúten</h3>
               <p class="card-text">
                 Condição autoimune onde o sistema imunológico ataca o intestino
                 delgado na presença de glúten, causando danos às vilosidades
@@ -375,85 +375,41 @@
       </div>
     </section>
 
-    <!-- Interactive Quiz Section -->
-    <section id="quiz" class="section">
-      <div class="container">
-        <h2 class="section-title" data-aos="fade-up">
-          Quiz: Você tem Intolerância ao Glúten?
-        </h2>
-        <div class="quiz-container" data-aos="fade-up" data-aos-delay="200">
-          <div id="quizContent">
-            <div class="quiz-question" id="questionText">
-              Você sente desconforto abdominal após consumir pães ou massas?
-            </div>
-            <div class="quiz-options" id="quizOptions">
-              <div class="quiz-option" data-value="2">
-                Sempre ou quase sempre
-              </div>
-              <div class="quiz-option" data-value="1">Às vezes</div>
-              <div class="quiz-option" data-value="0">Raramente ou nunca</div>
-            </div>
-            <div class="text-center">
-              <button
-                class="btn btn-primary btn-lg"
-                id="nextQuestion"
-                style="display: none"
-              >
-                Próxima Pergunta <i class="fas fa-arrow-right ms-2"></i>
-              </button>
-              <button
-                class="btn btn-success btn-lg"
-                id="showResult"
-                style="display: none"
-              >
-                Ver Resultado <i class="fas fa-check ms-2"></i>
-              </button>
-            </div>
-          </div>
-          <div class="quiz-result" id="quizResult"></div>
+  <!-- Interactive Quiz Section -->
+<section id="quiz" class="section">
+  <div class="container">
+    <h2 class="section-title" data-aos="fade-up">Quiz Interativo</h2>
+
+    <!-- Dropdown de seleção do quiz -->
+    <div class="text-center mb-4" data-aos="fade-up" data-aos-delay="100">
+      <label for="quizSelector" style="font-weight: bold; font-size: 15px;">Escolha o Quiz:</label>
+      <select id="quizSelector" class="form-select d-inline-block w-auto">
+        <option value="gluten" selected>Intolerância ao Glúten</option>
+        <option value="lactose">Intolerância à Lactose</option>
+        <option value="amendoim">Alergia a Amendoim</option>
+      </select>
+    </div>
+
+    <div class="quiz-container" data-aos="fade-up" data-aos-delay="200">
+      <div id="quizContent">
+        <div class="quiz-question" id="questionText"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+
+        <div class="text-center">
+          <button class="btn btn-primary btn-lg" id="nextQuestion" style="display: none">
+            Próxima Pergunta <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+          <button class="btn btn-success btn-lg" id="showResult" style="display: none">
+            Ver Resultado <i class="fas fa-check ms-2"></i>
+          </button>
         </div>
       </div>
-    </section>
 
-   
- <!-- Tips Section -->
-    <section id="tips" class="section bg-light">
-        <div class="container">
-            <h2 class="section-title" data-aos="fade-up">Dicas Práticas</h2>
-            <div class="tips-grid">
-                <div class="tip-card" data-aos="flip-left" data-aos-delay="100">
-                    <div class="tip-number">01</div>
-                    <h4>Leia Sempre os Rótulos</h4>
-                    <p>Verifique a lista de ingredientes e procure por certificações "sem glúten". Cuidado com contaminação cruzada.</p>
-                </div>
-                <div class="tip-card" data-aos="flip-left" data-aos-delay="200">
-                    <div class="tip-number">02</div>
-                    <h4>Cozinhe em Casa</h4>
-                    <p>Prepare suas próprias refeições para ter controle total sobre os ingredientes utilizados.</p>
-                </div>
-                <div class="tip-card" data-aos="flip-left" data-aos-delay="300">
-                    <div class="tip-number">03</div>
-                    <h4>Tenha um Nutricionista</h4>
-                    <p>Busque orientação profissional para garantir uma dieta equilibrada e nutritiva.</p>
-                </div>
-                <div class="tip-card" data-aos="flip-left" data-aos-delay="400">
-                    <div class="tip-number">04</div>
-                    <h4>Evite Contaminação Cruzada</h4>
-                    <p>Use utensílios separados e superfícies limpas ao preparar alimentos sem glúten.</p>
-                </div>
-                <div class="tip-card" data-aos="flip-left" data-aos-delay="500">
-                    <div class="tip-number">05</div>
-                    <h4>Explore Alternativas</h4>
-                    <p>Descubra farinhas sem glúten como arroz, amêndoa, coco e tapioca para suas receitas.</p>
-                </div>
-                <div class="tip-card" data-aos="flip-left" data-aos-delay="600">
-                    <div class="tip-number">06</div>
-                    <h4>Comunique-se</h4>
-                    <p>Informe restaurantes e familiares sobre sua condição para evitar exposição acidental.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+      <div class="quiz-result" id="quizResult"></div>
+    </div>
+  </div>
+</section>
+
 
     <!-- Footer -->
     <footer class="footer">
@@ -508,6 +464,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script src="js/quiz.js"></script>
+    <script src="/js/quiz.js"></script>
   </body>
 </html>
