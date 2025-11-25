@@ -144,16 +144,31 @@ body {
 }
 
 /* Navbar */
-.titleNav {
-  font-size: 50px;
-  font-weight: bold;
-  color: #51cf3c;
-}
+ .logo-text {
+    font-family: "Poppins", Arial, sans-serif;
+    font-size: 2.4rem;
+    font-weight: bold;
+  }
+
+  .logo-text span:first-child {
+    color: #2C7A6B; /* tom de verde escuro para "Rotu" */
+  }
+
+  .logo-text span:last-child {
+    color: #5BE45B; /* verde claro para "Scan" */
+  }
 
 .iconLogo {
+    width: 90px;
+    height: 90px;
+   display: flex;
+   margin-right: 20px;
+
+}
+/* .iconLogo {
   width: 90px;
   height: 90px;
-}
+} */
 
 .navbar {
   background: rgba(255, 255, 255, 0.95) !important;
